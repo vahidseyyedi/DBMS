@@ -24,11 +24,10 @@ WHERE s1.id NOT IN (
 )
 
 --2 join
-SELECT t1.lname t1.fname
+SELECT t1.fname, t1.lname
 FROM teachers t1
-INNER JOIN enrollments e1 ON (t1.id = e1.tid AND e1.grade>=10)
-INNER JOIN teachers t1 ON (e1.tid )
-------continue
+LEFT JOIN enrollment e1 on (e1.tid = t1.id AND grade < 10)
+WHERE e1.id is null  
 
 --2 set_operator
 SELECT t1.lname t1.fname
@@ -48,6 +47,51 @@ WHERE t1.id IN (
 )
 
 --3 join
-SELECT t1.lname t1.fname
+SELECT t1.fname t1.lname
 FROM teachers t1
-INNER JOIN enrollments e1 ON ()
+LEFT JOIN enrollments e1 on (t1.id = e1.tid and e1.grade<10)
+LEFT JOIN enrollments e2 on (t1.id = e1.tid and e1.termid != e2.termid)
+
+--3set-operator
+SELECT t1.fname t1.lname
+FROM teachers t1
+LEFT JOIN enrollments e1 on (e1.tid = t1.id and e1.grade<10)
+INTERSECT
+FROM teachers t2
+INNER JOIN enrollments e2 on (t2.id = e2.tid)
+INNER JOIN enrollments e3 on (t2.id = e2.tid AND e1.termid != e2.termid)
+
+--3 nested_query 
+SELECT t1.fname t1.lname
+FROM teachers t1
+INNER JOIN enrollments e1 on (t1.id =e1.tid and e1.grade<10)
+WHERE e1.termid != e2.termid (
+    SELECT *
+    FROM teachers t2
+    INNER JOIN enrollments e2 on (t2.id = e2.tid)
+)
+
+--4 join
+SELECT s1.lname s1.fname
+FROM students s1
+LEFT JOIN enrollments e1 on (s1.id = e1.sid and e1.grade<10)
+LEFT JOIN enrollments e2 on (s1.id = e2.sid and e2.tid != e1.tid )
+WHERE e1.id I not null and e2.id Is null
+
+--4 set_operator 
+SELECT s1.fname s1.lname
+FROM students s1
+INNER JOIN enrollments e1 on (s1.id = e1.id and e1.grade < 10)
+INTERSECT
+FROM teachers t1
+INNER JOIN enrollments e2 on (t1.id = e2.tid and e2.grade <10 )
+
+--4 nested_query 
+SELECT s1.fname s1.lname 
+FROM students s1
+INNER JOIN enrollments e1 on (s1.id = e1.id and e1.grade < 10)
+WHERE e1.sid not in (
+SELECT s2.id
+FROM students s2
+INNER JOIN enrollments e2 on (e1.sid = e2.sid and e2.tid != e1.tid and grade<10)
+)
