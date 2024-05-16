@@ -40,7 +40,7 @@ INNER JOIN enrollments e1 ON (t1.id = e1.tid AND e1.grade<10)
 --2 nested_query
 SELECT t1.lname t1.fname
 FROM teachers t1
-WHERE t1.id IN (
+WHERE t1.id not IN (
     SELECT *
     FROM teachers t2
     INNER JOIN enrollments e1 ON (t2.id = e1.tid AND e1.grade>=10)
